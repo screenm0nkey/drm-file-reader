@@ -85,9 +85,7 @@ router.put('/:id', function(req, res) {
     source.pipe(readLine);
     readLine.on('readable', function () {
         var line;
-        console.log(1)
-        if (line = readLine.read()) {
-            console.log(2)
+        while (line = readLine.read()) {
             // reset all enabled users as disabled
             if (/user:/.test(line)) {
                 line = '#user:'
