@@ -1,0 +1,23 @@
+{
+  "name": "drm-file-reader",
+  "version": "0.0.1",
+  "homepage": "https://github.com/screenm0nkey/drm-file-reader",
+  "authors": [
+    "Nick Lowman <digital@nicklowman.co.uk>"
+  ],
+  "description": "Read text file and convert it to JSON",
+  "main": "public/index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.18",
+    "lodash": "~2.4.1"
+  }
+}

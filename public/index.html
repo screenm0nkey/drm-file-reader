@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/public/stylesheets/style.css"/>
+    <title>User Selector</title>
+    <style>
+        .message {
+            background-color: lightgreen;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body ng-app="app" ng-controller="MainCtrl as Main">
+<h3>{{ selectedUser.name }}.<br/>
+    {{ selectedUser.group | removeGroup }}</h3>
+
+<form>
+    <select
+            ng-model="selectedUser"
+            ng-options="u.name group by u.group for u in users"
+            ng-change="Main.senduser(selectedUser)">
+        <option value="">-- Select User --</option>
+    </select>
+</form>
+
+<div class="message">{{ message }}</div>
+
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/lodash/dist/lodash.js"></script>
+<script>
+
+    (function(angular){
+        var app = angular.module('app', []);
+
+        //app.directive().showhide green message
+
+        app.filter('removeGroup', function () {
+            return function (text) {
+                if (text) {
+                    return text.replace('DRM_', '').replace('_', ' ');
+                }
+            }
+        });
+
+        app.service('UserService', function($http, $q){
+            this.set = function(name){
+                return $http({
+                    method : 'PUT',
+                    url : '/users/' + name
+                }).success(function(resp){
+                    console.log(resp);
+                }).error(function(resp){
+                    window.alert(resp.error);
+                });
+            }
+
+            this.get = function() {
+                var defer = $q.defer();
+
+                $http({
+                    method : 'GET',
+                    url : '/users'
+                }).success(function(resp){
+                    defer.resolve(resp.users);
+                });
+                
+                return defer.promise;
+            }
+        });
+
+
+
+        app.controller('MainCtrl', function($scope, UserService){
+            $scope.title = 'Express';
+
+            UserService.get().then(function (users) {
+                $scope.selectedUser = _.findWhere(users, {selected: true}) || { name : 'No user selected' };
+                $scope.users = users;
+            });
+
+            this.senduser = function(user) {
+                UserService.set(user.username).then(function (resp) {
+                   $scope.message = resp.data.message;
+                });
+            }
+        });
+
+    }(window.angular))
+
+</script>
+</body>
+</html>
