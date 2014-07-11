@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/public/stylesheets/style.css"/>
+    <title>User Selector</title>
+</head>
+<body ng-app="app" ng-controller="MainCtrl as Main">
+
+<textarea drm-replace name="sometext" id="" cols="30" rows="10"></textarea>
+
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/lodash/dist/lodash.js"></script>
+<script>
+
+    (function(angular){
+        var app = angular.module('app', []);
+
+        app.controller('MainCtrl', function($scope){});
+
+        app.directive('drmReplace', function () {
+            return {
+                restrict :'A',
+                link : function (scope, ele, attrs) {
+                    var search;
+                    var searchText = '';
+
+                    ele.keyup(function (evt) {
+                        console.log(evt);
+                        if (evt.keyCode === 32) {
+                            search = false;
+                            searchText = '';
+                            console.log(element)
+                        }
+                        if (evt.shiftKey && evt.keyCode === 50) {
+                            search = true
+                        }
+                        if (search) {
+                            searchText += evt.keyCode
+                        }
+                    })
+                }
+            }
+        })
+
+    }(window.angular))
+
+</script>
+</body>
+</html>
