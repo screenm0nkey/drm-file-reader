@@ -25,19 +25,13 @@ readLine.on('readable', function (data) {
         // enable the matching user.
         var newLine = match ? 'user:\n' : line+'\n';
 
-        dataArray.push(newLine);
-        match = false;
-
-        // add new line end of each user role
-        if (/DRM_/.test(newLine)) {
+        // add a new line after each user object as they get removed when the file is read.
+        if (/DRM_/.test(previousLine) && !/DRM_/.test(newLine)) {
             dataArray.push('\n');
-            // remove previous line if also contained DRM_
-            if (dataArray[dataArray.length-1] === '\n') {
-                dataArray.push('\nNICK');
-            }
-
         }
 
+        dataArray.push(newLine);
+        match = false;
 
         // if there is a username match then property on the next line will be 'user'
         if (username + ':' === line) {
@@ -45,17 +39,31 @@ readLine.on('readable', function (data) {
             userFound = true;
         }
 
+        previousLine = newLine;
 
     }
 });
 
 
 readLine.on('end', function () {
-    var fileOut = path.join(__dirname, '../test.yml');
+    var file1Out = path.join(__dirname, '../test1.yml');
+    var file2Out = path.join(__dirname, '../test2.yml');
     var dataOut = dataArray.join('');
-    console.log(dataOut)
-    fs.writeFile(fileOut, '', function(err) {});
-    fs.writeFile(dataOut, '', function(err) {});
+
+    fs.writeFile(file1Out, dataOut, function(err) {
+        if(err) {
+            console.log(err);
+        } else {
+            console.log("The file was saved!");
+        }
+    });
+    fs.writeFile(file2Out, dataOut, function(err) {
+        if(err) {
+            console.log(err);
+        } else {
+            console.log("The file was saved!");
+        }
+    });
 });
 
 
