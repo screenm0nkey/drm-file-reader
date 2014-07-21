@@ -1,0 +1,115 @@
+buzap:
+#user:
+   guId: "PSI43382081"
+   username: buzap
+   gpn: "43382081"
+   firstName: Piotr
+   lastName: Buza
+   email: piotr.buza@ubs.com
+   phoneNumber: "78123"
+   roles:
+     - DRM_Legal
+
+markeych:
+user:
+   guId: "PSI43296100"
+   username: markeych
+   gpn: "43296100"
+   firstName: Chantal
+   lastName: Markey
+   email: chantal.markey@ubs.com
+   phoneNumber: "7812333333"
+   roles:
+     - DRM_TALM
+
+vonpueph:
+#user:
+  guId: "PSI43320717"
+  username: vonpueph
+  gpn: "43320717"
+  firstName: Philipp
+  lastName: von Pueckler
+  email: philipp.von-pueckler@ubs.com
+  phoneNumber: "7812333333"
+  roles:
+    - DRM_Global_Treasury
+
+robertsc:
+#user:
+   guId: "PSI43318819"
+   username: robertsc
+   gpn: "43318819"
+   firstName: Sarah
+   lastName: Roberts
+   email: sarah.roberts@ubs.com
+   phoneNumber: "7812333333"
+   roles:
+     - DRM_MCOF
+
+garnervi:
+#user:
+   guId: "PSI43323476"
+   username: garnervi
+   gpn: "43323476"
+   firstName: Victoria
+   lastName: Garner
+   email: victoria.garner@ubs.com
+   phoneNumber: "7812333333"
+   roles:
+     - DRM_Collaborator
+
+fernanka:
+#user:
+    guId: "PSI43196792"
+    username: fernanka
+    gpn: "43196792"
+    firstName: Katy
+    lastName: Fernandez
+    email: katy.fernandez@ubs.com
+    phoneNumber: "7812333333"
+    roles:
+      - DRM_Legal
+
+moehrlph:
+#user:
+   guId: "PSI700046635"
+   username: moehrlph
+   gpn: "195465"
+   firstName: Philipp
+   lastName: Moehrle
+   email: philipp.moehrle@ubs.com
+   phoneNumber: "7812333333"
+   roles:
+     - DRM_Global_Treasury
+
+patelsh:
+#user:
+  guId: "PSI43337538"
+  username: patelsh
+  gpn: "43337538"
+  firstName: Sheena
+  lastName: Patel
+  email: sheena-s.patel@ubs.com
+  phoneNumber: "7812333333"
+  roles:
+    - DRM_MCOF
+
+super_approver:
+#user:
+  guId: "c751c4c5-b5e3-4306-b1d4-9c9c415db90d"
+  username: super_approver
+  gpn: "123456777777"
+  firstName: Super
+  lastName: Approver
+  email: sa-dummy@ubs.com
+  phoneNumber: "7812333333"
+  roles:
+    - DRM_Admin
+    - DRM_Collaborator
+    - DRM_Credit_Risk_Control
+    - DRM_Global_Treasury
+    - DRM_Legal
+    - DRM_MCOF
+    - DRM_Onboarding
+    - DRM_Sales
+    - DRM_TALM

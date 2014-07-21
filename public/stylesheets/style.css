@@ -6,3 +6,59 @@ body {
 a {
   color: #00B7FF;
 }
+
+.message {
+    background-color: lightgreen;
+    padding: 10px;
+    margin-top: 10px;
+}
+h5 {
+    margin-top: 0;
+    color: #ccc;
+    font-weight: normal;
+}
+
+.path {
+    display: block;
+}
+
+ul.path-list {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+    margin-top:10px;
+    font-family: courier;
+    font-size: 11px;
+}
+
+ul.path-list li {
+  padding: 3px;
+  background-color: yellow;
+  margin-bottom: 3px;
+}
+
+ul.path-list li button {
+  display: block;
+  float: left;
+  width :10%;
+}
+
+
+ul.path-list li span {
+  display: block;
+  float: right;
+  text-align: left;
+  width : 85%;
+}
+
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+.cf:after {
+    clear: both;
+}
+.cf {
+    *zoom: 1;
+}

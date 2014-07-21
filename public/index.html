@@ -4,19 +4,12 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/public/stylesheets/style.css"/>
     <title>User Selector</title>
-    <style>
-        .message {
-            background-color: lightgreen;
-            padding: 10px;
-            margin-top: 10px;
-        }
-    </style>
 </head>
 <body ng-app="app" ng-controller="MainCtrl as Main">
-<h3>{{ selectedUser.name }}.<br/>
-    {{ selectedUser.group | removeGroup }}</h3>
+<h3>{{ selectedUser.name }}.</h3>
+<h5>{{ selectedUser.group | removeGroup }}</h5>
 
-<form>
+<form name="select-user">
     <select
             ng-model="selectedUser"
             ng-options="u.name group by u.group for u in users"
@@ -25,70 +18,22 @@
     </select>
 </form>
 
-<div class="message">{{ message }}</div>
+<message></message>
+<add-file-path></add-file-path>
+
 
 <script src="bower_components/angular/angular.js"></script>
+<script src="/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/lodash/dist/lodash.js"></script>
-<script>
+<script src="public/javascripts/app.js"></script>
 
-    (function(angular){
-        var app = angular.module('app', []);
-
-        //app.directive().showhide green message
-
-        app.filter('removeGroup', function () {
-            return function (text) {
-                if (text) {
-                    return text.replace('DRM_', '').replace('_', ' ');
-                }
-            }
-        });
-
-        app.service('UserService', function($http, $q){
-            this.set = function(name){
-                return $http({
-                    method : 'PUT',
-                    url : '/users/' + name
-                }).success(function(resp){
-                    console.log(resp);
-                }).error(function(resp){
-                    window.alert(resp.error);
-                });
-            }
-
-            this.get = function() {
-                var defer = $q.defer();
-
-                $http({
-                    method : 'GET',
-                    url : '/users'
-                }).success(function(resp){
-                    defer.resolve(resp.users);
-                });
-                
-                return defer.promise;
-            }
-        });
-
-
-
-        app.controller('MainCtrl', function($scope, UserService){
-            $scope.title = 'Express';
-
-            UserService.get().then(function (users) {
-                $scope.selectedUser = _.findWhere(users, {selected: true}) || { name : 'No user selected' };
-                $scope.users = users;
-            });
-
-            this.senduser = function(user) {
-                UserService.set(user.username).then(function (resp) {
-                   $scope.message = resp.data.message;
-                });
-            }
-        });
-
-    }(window.angular))
-
+<script type="text/ng-template" id="filepath.html">
+    <form name="add-files">
+        <span class="path"><input><button ng-click='add($event)'>Add user_local.yaml file path</button></span>
+        <ul class="path-list">
+            <li ng-repeat="item in paths" class="cf"><button ng-click="remove(item)">X</button><span>{{ item.path }}</span></li>
+        </ul>
+    </form>
 </script>
 </body>
 </html>
