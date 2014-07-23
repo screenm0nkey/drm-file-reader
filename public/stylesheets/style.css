@@ -8,18 +8,41 @@ a {
 }
 
 .message {
+    color: #fff;
     background-color: lightgreen;
-    padding: 10px;
+    padding: 10px 20px;
     margin-top: 10px;
+    position: absolute;
+    top: 0;
+    -webkit-border-radius: 4px;
 }
+
+.message.error {
+    background-color: red;
+}
+
+h3 {
+    margin-bottom: 5px;
+}
+
 h5 {
-    margin-top: 0;
-    color: #ccc;
+    margin: 0 0 6px 0;
+    color: #999;
     font-weight: normal;
+    font-size: 15px;
+}
+
+hr {
+    margin: 20px 0;
 }
 
 .path {
     display: block;
+}
+
+.path-example {
+    font-family: courier;
+    color: #999;
 }
 
 ul.path-list {

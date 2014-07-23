@@ -3,56 +3,57 @@
 var express = require('express');
 var fs = require('fs');
 var path = require('path');
-var utils = require('./utils');
+var utils = require('./../utils/utils');
 var router = express.Router();
 
 
 router.get('/', function(req, res) {
-    utils.getConfig(res, function(config){
+    utils.readConfig(res).then(function(config){
         res.send(200, config);
     });
 });
 
 
 router.post('/', function(req, res) {
-    utils.getConfig(res, function(config){
-        var nextId = config.files[config.files.length-1].id + 1;
+    utils.readConfig(res).then(function(config){
+        var nextId;
+        var fileIn = req.body.path;
+
+        if (!fs.existsSync(fileIn)) {
+            res.send(418, 'The file "' + fileIn + '" does not exist.');
+            return;
+        }
+
+        if (config.files.length) {
+            nextId = config.files[config.files.length-1].id + 1;
+        } else {
+            nextId = 1;
+        }
 
         config.files.push({
             id : nextId,
-            path : req.body.path
+            path : fileIn
         });
 
-        var configJSON = JSON.stringify(config);
-
-        fs.writeFile(utils.configPath, configJSON, function (err) {
-            if (err) {
-                res.send(400, 'ERROR');
-                throw err;
-            }
-            res.send(200, configJSON);
+        utils.writeConfig(res, config).then(function(config){
+            res.send(200, config);
         });
     });
 });
 
 
 router.delete('/:id', function(req, res) {
-    utils.getConfig(res, function(config){
+    utils.readConfig(res).then(function(config){
         config.files = config.files.filter(function(file) {
             return file.id !== parseInt(req.params.id);
         });
 
-        config = JSON.stringify(config);
-
-        fs.writeFile(utils.configPath, config, function (err) {
-            if (err) {
-                res.send(400, 'ERROR');
-                throw err;
-            }
+        utils.writeConfig(res, config).then(function(config){
             res.send(200, config);
         });
     });
 });
+
 
 
 module.exports = router;

@@ -6,20 +6,28 @@
     <title>User Selector</title>
 </head>
 <body ng-app="app" ng-controller="MainCtrl as Main">
-<h3>{{ selectedUser.name }}.</h3>
-<h5>{{ selectedUser.group | removeGroup }}</h5>
 
-<form name="select-user">
-    <select
-            ng-model="selectedUser"
-            ng-options="u.name group by u.group for u in users"
-            ng-change="Main.senduser(selectedUser)">
-        <option value="">-- Select User --</option>
-    </select>
-</form>
+<span ng-if="!users.length">Please add a path to users_local.yml</span>
 
-<message></message>
-<add-file-path></add-file-path>
+<span ng-if="users.length">
+    <h3>Currently Selected user : {{ selectedUser.name }}</h3>
+    <h5>{{ selectedUser.group | removeGroup }}</h5>
+
+    <form name="select-user">
+        <select
+                ng-model="selectedUser"
+                ng-options="u.name group by u.group for u in users"
+                ng-change="Main.updateUser(selectedUser)">
+            <option value="">-- Select User --</option>
+        </select>
+    </form>
+</span>
+
+<hr/>
+
+<nl-message></nl-message>
+
+<nl-add-file-path></nl-add-file-path>
 
 
 <script src="bower_components/angular/angular.js"></script>
@@ -29,7 +37,13 @@
 
 <script type="text/ng-template" id="filepath.html">
     <form name="add-files">
-        <span class="path"><input><button ng-click='add($event)'>Add user_local.yaml file path</button></span>
+        <span class="path">
+            <p>Add paths of all users_local.yaml files i.e. <br>
+            <span class="path-example">/Users/someuser/app/users_local.yml</span> </p>
+
+            <input>
+            <button ng-click='add($event)'>Add user_local.yaml file path</button>
+        </span>
         <ul class="path-list">
             <li ng-repeat="item in paths" class="cf"><button ng-click="remove(item)">X</button><span>{{ item.path }}</span></li>
         </ul>

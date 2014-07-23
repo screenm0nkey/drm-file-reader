@@ -3,23 +3,25 @@
 
     var app = angular.module('app', []);
 
-    app.directive('message', function () {
+    app.directive('nlMessage', function () {
         return {
-            restrict : 'AE',
+            restrict : 'E',
             replace : true,
-            template : '<div class="message">Updated files to use <strong>{{ message }}</strong></div>',
+            template : '<div class="message {{ message.type }}"><strong>{{ message.message }}</div>',
             link : function (scope, el) {
                 $(el).hide();
+
                 scope.$watch('message', function (newVal, oldVal) {
                     if (newVal && newVal !== oldVal) {
-                        $(el).fadeIn(300).delay(1500).fadeOut(300);
+                        $(el).fadeIn(300).delay(2000).fadeOut(300);
                     }
                 });
             }
         };
     });
 
-    app.directive('addFilePath', function (FilePathService) {
+
+    app.directive('nlAddFilePath', ['FilePathService', function (FilePathService) {
         return {
             restrict : 'AE',
             replace : true,
@@ -27,7 +29,6 @@
             link : function (scope, element) {
                 FilePathService.query().then(function (resp) {
                     scope.paths = resp.data.files;
-
                 });
 
                 scope.remove = function (item) {
@@ -39,15 +40,22 @@
                 scope.add = function (evt) {
                     var path = $(evt.target).closest('.path').find('input').val();
                     if (path) {
-                        FilePathService.add(path).success(function (resp) {
-                            scope.paths = resp.files;
+                        FilePathService.add(path).then(function (files) {
+                            scope.paths = files;
                             $(element).find('input').val('');
+                            scope.$emit('new:file');
+                        }, function (error) {
+                            scope.message = {
+                                type: 'error',
+                                message : error
+                            };
                         });
                     }
                 };
             }
         };
-    });
+    }]);
+
 
     app.filter('removeGroup', function () {
         return function (text) {
@@ -57,13 +65,24 @@
         };
     });
 
-    app.service('FilePathService', function($http){
+
+    app.service('FilePathService', function($http, $q){
+        var defer = $q.defer();
+
         this.add = function(path) {
-            return $http({
+            var defer = $q.defer();
+
+            $http({
                 method : 'POST',
                 url : '/filepath',
                 data : {path : path }
+            }).success(function(resp){
+                defer.resolve(resp.files);
+            }).error(function (msg) {
+                defer.reject(msg);
             });
+
+            return defer.promise;
         };
 
         this.remove = function(id) {
@@ -81,8 +100,9 @@
         };
     });
 
+
     app.service('UserService', function($http, $q){
-        this.set = function(name){
+        this.update = function(name){
             return $http({
                 method : 'PUT',
                 url : '/users/' + name
@@ -91,31 +111,48 @@
 
         this.query = function() {
             var defer = $q.defer();
+
             $http({
                 method : 'GET',
                 url : '/users'
             }).success(function(resp){
                 defer.resolve(resp.users);
+            }).error(function (msg) {
+                defer.reject(msg);
             });
+
             return defer.promise;
         };
     });
 
 
 
-    app.controller('MainCtrl', function($scope, UserService){
-        $scope.title = 'Express';
+    app.controller('MainCtrl', ['$scope', 'UserService', function($scope, UserService) {
+        var self = this;
 
+        $scope.$on('new:file', function () {
+            if ($scope.selectedUser) {
+                self.updateUser($scope.selectedUser);
+            }
+        });
+        
         UserService.query().then(function (users) {
             $scope.selectedUser = _.findWhere(users, {selected: true}) || { name : 'No user selected' };
             $scope.users = users;
+        }, function (msg) {
+            $scope.message = {
+                type: 'error',
+                message : msg
+            };
         });
 
-        this.senduser = function(user) {
-            UserService.set(user.username).then(function (resp) {
-                $scope.message = resp.data.message;
+        self.updateUser = function(user) {
+            UserService.update(user.username).then(function (resp) {
+                $scope.message = {
+                    message : 'Update files to use ' + resp.data.message
+                };
             });
         };
-    });
+    }]);
 
 }(window.angular));
