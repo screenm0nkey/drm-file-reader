@@ -10,6 +10,9 @@ var router = express.Router();
 /* GET users listing. */
 router.get('/', function(req, res) {
     utils.readConfig(res).then(function(config){
+        if (!config.files.length) {
+            res.send(200, 'Config contains no files. Please add users_local.yml file');
+        }
         var fileIn = config.files[0].path;
 
         if (!fs.existsSync(fileIn)) {
@@ -88,8 +91,10 @@ router.put('/:id', function(req, res) {
         var userFound = false;
         var previousLine;
         var username = req.params.id;
+        var name = req.body.name;
         var fileIn = path.join(config.files[0].path);
         var readStream = fs.createReadStream(fileIn);
+
         readStream.pipe(readLine);
 
         readLine.on('readable', function () {
@@ -127,17 +132,18 @@ router.put('/:id', function(req, res) {
             var dataOut = dataArray.join('');
 
             config.files.forEach(function (file) {
-                console.log(file)
                 fs.writeFileSync(file.path, dataOut);
             });
 
             if (!userFound) {
-                res.send(400, {
-                    error : 'No user found with "' + username + '"'
+                res.send(300, {
+                    type : 'error',
+                    error : 'No user found for "' + name + '"'
                 });
             } else {
                 res.send(201, {
-                    message : username
+                    type: 'success',
+                    message : 'Files updated for "' + name + '"'
                 });
             }
         });

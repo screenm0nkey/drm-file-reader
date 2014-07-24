@@ -43,7 +43,7 @@
                         FilePathService.add(path).then(function (files) {
                             scope.paths = files;
                             $(element).find('input').val('');
-                            scope.$emit('new:file');
+
                         }, function (error) {
                             scope.message = {
                                 type: 'error',
@@ -66,9 +66,7 @@
     });
 
 
-    app.service('FilePathService', function($http, $q){
-        var defer = $q.defer();
-
+    app.service('FilePathService', ['$rootScope', '$http', '$q', function($rootScope, $http, $q){
         this.add = function(path) {
             var defer = $q.defer();
 
@@ -77,6 +75,10 @@
                 url : '/filepath',
                 data : {path : path }
             }).success(function(resp){
+                if (resp.files.length === 1) {
+                    $rootScope.$broadcast('file:first');
+                }
+                $rootScope.$broadcast('file:new');
                 defer.resolve(resp.files);
             }).error(function (msg) {
                 defer.reject(msg);
@@ -89,6 +91,8 @@
             return $http({
                 method : 'DELETE',
                 url : '/filepath/' + id
+            }).success(function () {
+                $rootScope.$broadcast('file:remove');
             });
         };
 
@@ -98,15 +102,25 @@
                 url : '/filepath'
             });
         };
-    });
+    }]);
 
 
     app.service('UserService', function($http, $q){
-        this.update = function(name){
-            return $http({
-                method : 'PUT',
-                url : '/users/' + name
-            });
+        this.update = function(user){
+            var defer = $q.defer();
+            if (user) {
+                $http({
+                    method : 'PUT',
+                    url : '/users/' + user.username,
+                    data : user
+                }).success(function (resp) {
+                    defer.resolve(resp);
+                });
+            } else {
+                defer.reject();
+            }
+            
+            return defer.promise;
         };
 
         this.query = function() {
@@ -130,27 +144,29 @@
     app.controller('MainCtrl', ['$scope', 'UserService', function($scope, UserService) {
         var self = this;
 
-        $scope.$on('new:file', function () {
+        var getUsers = function () {
+            UserService.query().then(function (users) {
+                $scope.selectedUser = _.findWhere(users, { selected: true }) || { name : 'No user selected' };
+                $scope.users = users;
+            }, function (message) {
+                $scope.message = message;
+            });
+        };
+
+        getUsers();
+
+        $scope.$on('file:new', function () {
             if ($scope.selectedUser) {
                 self.updateUser($scope.selectedUser);
             }
         });
-        
-        UserService.query().then(function (users) {
-            $scope.selectedUser = _.findWhere(users, {selected: true}) || { name : 'No user selected' };
-            $scope.users = users;
-        }, function (msg) {
-            $scope.message = {
-                type: 'error',
-                message : msg
-            };
-        });
+
+        $scope.$on('file:first', getUsers);
+        $scope.$on('file:remove', getUsers);
 
         self.updateUser = function(user) {
-            UserService.update(user.username).then(function (resp) {
-                $scope.message = {
-                    message : 'Update files to use ' + resp.data.message
-                };
+            UserService.update(user).then(function (message) {
+                $scope.message = message;
             });
         };
     }]);

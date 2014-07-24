@@ -48,13 +48,15 @@ var readConfig = function(res) {
 
         try {
             config = JSON.parse(data);
-            if (!Object.keys(config).length) {
-                throw new Error('Your config object is empty. It needs at least one file path.');
-            }
         }
         catch (error) {
             console.log('There has been an error parsing your JSON.');
             console.log(error);
+        }
+
+        if (!Object.keys(config).length) {
+            res.send(418, 'Your config object is empty. It needs at least one file path.');
+            throw new Error('Your config object is empty. It needs at least one file path.');
         }
 
         deferred.resolve(config);
