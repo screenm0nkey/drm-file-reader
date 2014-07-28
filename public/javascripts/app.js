@@ -3,6 +3,28 @@
 
     var app = angular.module('app', []);
 
+    app.directive('nlCloak', ['$rootScope', function ($rootScope) {
+        return {
+            restrict : 'A',
+            controller : function ($element) {
+                var registerArr = [];
+
+                $rootScope.$on('nlcloak:add', function (evt, name) {
+                    registerArr.push(name);
+                });
+
+                $rootScope.$on('nlcloak:remove', function (evt, name) {
+                    registerArr = _.without(registerArr, name);
+
+                    if (!registerArr.length) {
+                        $element.removeAttr('nl-cloak');
+                    }
+                });
+            }
+        };
+    }]);
+
+
     app.directive('nlMessage', function () {
         return {
             restrict : 'E',
@@ -27,8 +49,11 @@
             replace : true,
             templateUrl : 'filepath.html',
             link : function (scope, element) {
+                scope.$emit('nlcloak:add', 'fps:query');
+
                 FilePathService.query().then(function (resp) {
                     scope.paths = resp.data.files;
+                    scope.$emit('nlcloak:remove', 'fps:query');
                 });
 
                 scope.remove = function (item) {
@@ -100,6 +125,8 @@
             return $http({
                 method : 'GET',
                 url : '/filepath'
+            }).success(function () {
+                $rootScope.$broadcast('file:');
             });
         };
     }]);
@@ -108,7 +135,8 @@
     app.service('UserService', function($http, $q){
         this.update = function(user){
             var defer = $q.defer();
-            if (user) {
+
+            if (user.username) {
                 $http({
                     method : 'PUT',
                     url : '/users/' + user.username,
@@ -142,12 +170,15 @@
 
 
     app.controller('MainCtrl', ['$scope', 'UserService', function($scope, UserService) {
+        $scope.$emit('nlcloak:add', 'mainctrl');
+
         var self = this;
 
         var getUsers = function () {
             UserService.query().then(function (users) {
                 $scope.selectedUser = _.findWhere(users, { selected: true }) || { name : 'No user selected' };
                 $scope.users = users;
+                $scope.$emit('nlcloak:remove', 'mainctrl');
             }, function (message) {
                 $scope.message = message;
             });
@@ -161,6 +192,7 @@
             }
         });
 
+        // we only need to call getUsers when the first file is added as it will be used to update the users.
         $scope.$on('file:first', getUsers);
         $scope.$on('file:remove', getUsers);
 

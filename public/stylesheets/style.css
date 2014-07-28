@@ -1,3 +1,7 @@
+[nl-cloak] {
+    display: none;
+}
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -5,6 +9,53 @@ body {
 
 a {
   color: #00B7FF;
+}
+
+form {
+    position: relative;
+}
+
+input {
+    width: 100%;
+    display:block;
+    padding: 5px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border: solid 1px #ccc;
+    border-radius: 4px;
+    color: #666;
+    font-size: 13px;
+}
+
+.left{
+    float : left;
+    width : 10%;
+}
+
+.right {
+    float: left;
+    width: 90%;
+}
+
+.right p {
+    background-color: pink;
+}
+
+
+h3 {
+    margin: 0 0 5px 0;
+}
+
+h5 {
+    margin: 0 0 6px 0;
+    color: #999;
+    font-weight: normal;
+    font-size: 15px;
+}
+
+hr {
+    margin: 20px 0;
 }
 
 .message {
@@ -21,20 +72,10 @@ a {
     background-color: red;
 }
 
-h3 {
-    margin-bottom: 5px;
-}
-
-h5 {
-    margin: 0 0 6px 0;
-    color: #999it
-;
-    font-weight: normal;
-    font-size: 15px;
-}
-
-hr {
-    margin: 20px 0;
+.no-users {
+    background-color: #ccc;
+    padding: 5px 10px;
+    border-radius: 4px;
 }
 
 .path {
@@ -52,13 +93,16 @@ ul.path-list {
     margin: 0px;
     margin-top:10px;
     font-family: courier;
-    font-size: 11px;
+    font-size: 12px;
+    color : #000;
+
 }
 
 ul.path-list li {
   padding: 3px;
-  background-color: yellow;
+  background-color: goldenrod;
   margin-bottom: 3px;
+  border-radius: 4px;
 }
 
 ul.path-list li button {
@@ -69,10 +113,12 @@ ul.path-list li button {
 
 
 ul.path-list li span {
-  display: block;
-  float: right;
-  text-align: left;
-  width : 85%;
+    display: block;
+    float: right;
+    text-align: left;
+    width: 85%;
+    position: relative;
+    top: 4px;
 }
 
 .cf:before,

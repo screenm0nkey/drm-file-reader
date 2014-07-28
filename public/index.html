@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="/public/stylesheets/style.css"/>
     <title>User Selector</title>
 </head>
-<body ng-app="app" ng-controller="MainCtrl as Main">
+<body nl-cloak ng-app="app" ng-controller="MainCtrl as Main">
 
 <span class="no-users" ng-if="!users.length">Please add paths to your users_local.yml file</span>
 
@@ -39,13 +39,17 @@
     <form name="add-files">
         <span class="path">
             <p>Add paths of all users_local.yaml files i.e. <br>
-            <span class="path-example">/Users/someuser/app/users_local.yml</span> </p>
+            <span class="path-example">/Users/someuser/app/users_local.yml</span>
 
-            <input>
-            <button ng-click='add($event)'>Add user_local.yaml file path</button>
+            <div class="cf">
+                <div class="left"><button ng-click='add($event)'>Add path</button></div>
+                <input class="right" type="text"/>
+            </div>
+
         </span>
+
         <ul class="path-list">
-            <li ng-repeat="item in paths" class="cf"><button ng-click="remove(item)">X</button><span>{{ item.path }}</span></li>
+            <li ng-repeat="item in paths" class="cf"><button ng-click="remove(item)">Remove</button><span>{{ item.path }}</span></li>
         </ul>
     </form>
 </script>
