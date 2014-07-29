@@ -1,7 +1,7 @@
 (function(angular){
     "use strict";
 
-    var app = angular.module('app', []);
+    var app = angular.module('app', ['ngResource']);
 
     app.directive('nlCloak', ['$rootScope', function ($rootScope) {
         return {
@@ -51,14 +51,14 @@
             link : function (scope, element) {
                 scope.$emit('nlcloak:add', 'fps:query');
 
-                FilePathService.query().then(function (resp) {
-                    scope.paths = resp.data.files;
+                FilePathService.query().then(function (filePaths) {
+                    scope.paths = filePaths;
                     scope.$emit('nlcloak:remove', 'fps:query');
                 });
 
                 scope.remove = function (item) {
-                    FilePathService.remove(item.id).success(function (resp) {
-                        scope.paths = resp.files;
+                    FilePathService.remove(item.id).then(function (filePaths) {
+                        scope.paths = filePaths;
                     });
                 };
 
@@ -91,76 +91,65 @@
     });
 
 
-    app.service('FilePathService', ['$rootScope', '$http', '$q', function($rootScope, $http, $q){
+    app.service('FilePathService', ['$rootScope', '$resource', '$q', function($rootScope, $resource, $q){
+        var filePath = $resource('/filepath/:id', {id: '@id'}, {
+            add: { method:'POST', isArray:true },
+            remove: { method:'DELETE', isArray:true }
+        });
+
         this.add = function(path) {
             var defer = $q.defer();
 
-            $http({
-                method : 'POST',
-                url : '/filepath',
-                data : {path : path }
-            }).success(function(resp){
-                if (resp.files.length === 1) {
+            filePath.add({path : path}, function (filePaths) {
+                if (filePaths.length === 1) {
                     $rootScope.$broadcast('file:first');
                 }
                 $rootScope.$broadcast('file:new');
-                defer.resolve(resp.files);
-            }).error(function (msg) {
-                defer.reject(msg);
+                defer.resolve(filePaths);
+            },function (resp) {
+                defer.reject(resp.data);
             });
 
             return defer.promise;
         };
 
+
         this.remove = function(id) {
-            return $http({
-                method : 'DELETE',
-                url : '/filepath/' + id
-            }).success(function () {
+            return filePath.remove({ id:id }, function () {
                 $rootScope.$broadcast('file:remove');
-            });
+            }).$promise;
         };
 
         this.query = function() {
-            return $http({
-                method : 'GET',
-                url : '/filepath'
-            }).success(function () {
-                $rootScope.$broadcast('file:');
-            });
+            return filePath.query().$promise;
         };
     }]);
 
 
-    app.service('UserService', function($http, $q){
+    app.service('UserService', function($q, $resource){
+        var users = $resource('/users/:username', {username: '@username'}, {
+            update: { method:'PUT' }
+        });
+
         this.update = function(user){
             var defer = $q.defer();
 
-            if (user.username) {
-                $http({
-                    method : 'PUT',
-                    url : '/users/' + user.username,
-                    data : user
-                }).success(function (resp) {
-                    defer.resolve(resp);
-                });
-            } else {
+            users.update(user, function (resp) {
+                defer.resolve(resp);
+            }, function () {
                 defer.reject();
-            }
-            
+            });
+
             return defer.promise;
         };
 
         this.query = function() {
             var defer = $q.defer();
 
-            $http({
-                method : 'GET',
-                url : '/users'
-            }).success(function(resp){
-                defer.resolve(resp.users);
-            }).error(function (msg) {
-                defer.reject(msg);
+            users.query(function(users){
+                defer.resolve(users);
+            }, function(resp){
+                defer.reject(resp.data[0]);
             });
 
             return defer.promise;
@@ -180,7 +169,8 @@
                 $scope.users = users;
                 $scope.$emit('nlcloak:remove', 'mainctrl');
             }, function (message) {
-                $scope.message = message;
+                $scope.users = [];
+                $scope.message = {type : 'error', message : message};
             });
         };
 

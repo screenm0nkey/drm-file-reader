@@ -42,7 +42,7 @@ var readConfig = function(res) {
 
     fs.readFile(configPath, function (err, data) {
         if (err) {
-            res.send(400, 'File Request Error');
+            res.send(418, 'File Request Error');
             throw err;
         }
 
@@ -69,11 +69,9 @@ var readConfig = function(res) {
 var writeConfig = function(res, config) {
     var deferred = Q.defer();
 
-    config = JSON.stringify(config);
-
-    fs.writeFile(configPath, config, function (err) {
+    fs.writeFile(configPath, JSON.stringify(config), function (err) {
         if (err) {
-            res.send(400, 'File Write Error');
+            res.send(418, 'File Write Error');
             throw err;
         }
         deferred.resolve(config);

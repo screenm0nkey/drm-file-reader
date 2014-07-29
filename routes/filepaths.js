@@ -9,7 +9,7 @@ var router = express.Router();
 
 router.get('/', function(req, res) {
     utils.readConfig(res).then(function(config){
-        res.send(200, config);
+        res.send(200, config.files);
     });
 });
 
@@ -36,7 +36,7 @@ router.post('/', function(req, res) {
         });
 
         utils.writeConfig(res, config).then(function(config){
-            res.send(200, config);
+            res.send(200, config.files);
         });
     });
 });
@@ -49,7 +49,7 @@ router.delete('/:id', function(req, res) {
         });
 
         utils.writeConfig(res, config).then(function(config){
-            res.send(200, config);
+            res.send(200, config.files);
         });
     });
 });

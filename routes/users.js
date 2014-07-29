@@ -11,12 +11,12 @@ var router = express.Router();
 router.get('/', function(req, res) {
     utils.readConfig(res).then(function(config){
         if (!config.files.length) {
-            res.send(200, 'Config contains no files. Please add users_local.yml file');
+            res.send(418, ['Config contains no files. Please add users_local.yml file']);
         }
         var fileIn = config.files[0].path;
 
         if (!fs.existsSync(fileIn)) {
-            res.send(418, 'The file "' + fileIn + '" does not exist.');
+            res.send(418, ['The file "' + fileIn + '" does not exist.']);
             return;
         }
 
@@ -74,9 +74,7 @@ router.get('/', function(req, res) {
                 users.push(user);
             }
             // send users back
-            res.send(201, {
-                users : users
-            });
+            res.send(201, users);
         });
     });
 });
