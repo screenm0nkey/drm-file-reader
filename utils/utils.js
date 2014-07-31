@@ -5,6 +5,27 @@ var fs = require('fs');
 var path = require('path');
 var Q = require('q');
 
+var configPath = path.join(__dirname, '../config.json');
+
+
+var message = function (res) {
+    return {
+        error : function (message) {
+            res.send(418, {
+                type : 'error',
+                message : message
+            });
+        },
+        success : function (message) {
+            res.send(200, {
+                type : 'success',
+                message : message
+            });
+        }
+    };
+};
+
+
 // www.strongloop.com/strongblog/practical-examples-of-the-new-node-js-streams-api/
 var CreateLiner = function () {
     var liner = new stream.Transform( { objectMode: true } );
@@ -33,16 +54,13 @@ var CreateLiner = function () {
 };
 
 
-var configPath = path.join(__dirname, '../config.json');
-
-
 var readConfig = function(res) {
     var config;
     var deferred = Q.defer();
 
     fs.readFile(configPath, function (err, data) {
         if (err) {
-            res.send(418, 'File Request Error');
+            message(res).error('Error reading config file');
             throw err;
         }
 
@@ -55,7 +73,7 @@ var readConfig = function(res) {
         }
 
         if (!Object.keys(config).length) {
-            res.send(418, 'Your config object is empty. It needs at least one file path.');
+            message(res).error('Your config object is empty. It needs at least one file path.');
             throw new Error('Your config object is empty. It needs at least one file path.');
         }
 
@@ -71,7 +89,7 @@ var writeConfig = function(res, config) {
 
     fs.writeFile(configPath, JSON.stringify(config), function (err) {
         if (err) {
-            res.send(418, 'File Write Error');
+            message(res).error('Error writing config file');
             throw err;
         }
         deferred.resolve(config);
@@ -81,8 +99,10 @@ var writeConfig = function(res, config) {
 };
 
 
+
 module.exports = {
     CreateLiner : CreateLiner,
     readConfig  : readConfig,
-    writeConfig : writeConfig
+    writeConfig : writeConfig,
+    message     : message
 };

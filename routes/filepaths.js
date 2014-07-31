@@ -9,7 +9,7 @@ var router = express.Router();
 
 router.get('/', function(req, res) {
     utils.readConfig(res).then(function(config){
-        res.send(200, config.files);
+        res.send(200, config);
     });
 });
 
@@ -20,7 +20,7 @@ router.post('/', function(req, res) {
         var fileIn = req.body.path;
 
         if (!fs.existsSync(fileIn)) {
-            res.send(418, 'The file "' + fileIn + '" does not exist.');
+            utils.message(res).error('The file "' + fileIn + '" does not exist.');
             return;
         }
 
@@ -36,7 +36,7 @@ router.post('/', function(req, res) {
         });
 
         utils.writeConfig(res, config).then(function(config){
-            res.send(200, config.files);
+            res.send(200, config);
         });
     });
 });
@@ -49,7 +49,7 @@ router.delete('/:id', function(req, res) {
         });
 
         utils.writeConfig(res, config).then(function(config){
-            res.send(200, config.files);
+            res.send(200, config);
         });
     });
 });

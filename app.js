@@ -26,7 +26,7 @@ app.get("/", function(req, res) {
 });
 
 app.use('/users', users);
-app.use('/filepath', filepaths);
+app.use('/filepaths', filepaths);
 
 
 /// catch 404 and forward to error handler

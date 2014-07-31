@@ -11,12 +11,12 @@ var router = express.Router();
 router.get('/', function(req, res) {
     utils.readConfig(res).then(function(config){
         if (!config.files.length) {
-            res.send(418, ['Config contains no files. Please add users_local.yml file']);
+            utils.message(res).error('Config contains no files. Please add users_local.yml file');
         }
         var fileIn = config.files[0].path;
 
         if (!fs.existsSync(fileIn)) {
-            res.send(418, ['The file "' + fileIn + '" does not exist.']);
+            utils.message(res).error('The file "' + fileIn + '" does not exist.');
             return;
         }
 
@@ -74,7 +74,7 @@ router.get('/', function(req, res) {
                 users.push(user);
             }
             // send users back
-            res.send(201, users);
+            res.send(201, {users : users});
         });
     });
 });
@@ -134,15 +134,9 @@ router.put('/:id', function(req, res) {
             });
 
             if (!userFound) {
-                res.send(300, {
-                    type : 'error',
-                    error : 'No user found for "' + name + '"'
-                });
+                utils.message(res).error('No user found for "' + name + '"');
             } else {
-                res.send(201, {
-                    type: 'success',
-                    message : 'Files updated for "' + name + '"'
-                });
+                utils.message(res).success('Files updated for "' + name + '"');
             }
         });
     });

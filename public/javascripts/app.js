@@ -9,11 +9,11 @@
             controller : function ($element) {
                 var registerArr = [];
 
-                $rootScope.$on('nlcloak:add', function (evt, name) {
+                $rootScope.$on('loading', function (evt, name) {
                     registerArr.push(name);
                 });
 
-                $rootScope.$on('nlcloak:remove', function (evt, name) {
+                $rootScope.$on('loaded', function (evt, name) {
                     registerArr = _.without(registerArr, name);
 
                     if (!registerArr.length) {
@@ -43,21 +43,21 @@
     });
 
 
-    app.directive('nlAddFilePath', ['FilePathService', function (FilePathService) {
+    app.directive('nlAddFilePath', ['FilePathService', function (filePathService) {
         return {
             restrict : 'AE',
             replace : true,
             templateUrl : 'filepath.html',
             link : function (scope, element) {
-                scope.$emit('nlcloak:add', 'fps:query');
+                scope.$emit('loading', 'fpsquery');
 
-                FilePathService.query().then(function (filePaths) {
+                filePathService.query().then(function (filePaths) {
                     scope.paths = filePaths;
-                    scope.$emit('nlcloak:remove', 'fps:query');
+                    scope.$emit('loaded', 'fpsquery');
                 });
 
                 scope.remove = function (item) {
-                    FilePathService.remove(item.id).then(function (filePaths) {
+                    filePathService.remove(item.id).then(function (filePaths) {
                         scope.paths = filePaths;
                     });
                 };
@@ -65,15 +65,12 @@
                 scope.add = function (evt) {
                     var path = $(evt.target).closest('.path').find('input').val();
                     if (path) {
-                        FilePathService.add(path).then(function (files) {
+                        filePathService.add(path).then(function (files) {
                             scope.paths = files;
                             $(element).find('input').val('');
 
-                        }, function (error) {
-                            scope.message = {
-                                type: 'error',
-                                message : error
-                            };
+                        }, function (message) {
+                            scope.message = message;
                         });
                     }
                 };
@@ -92,20 +89,21 @@
 
 
     app.service('FilePathService', ['$rootScope', '$resource', '$q', function($rootScope, $resource, $q){
-        var filePath = $resource('/filepath/:id', {id: '@id'}, {
-            add: { method:'POST', isArray:true },
-            remove: { method:'DELETE', isArray:true }
+        var filePath = $resource('/filepaths/:id', {id: '@id'}, {
+            add: { method:'POST' },
+            remove: { method:'DELETE' },
+            query: { method:'GET', isArray:false }
         });
 
         this.add = function(path) {
             var defer = $q.defer();
 
-            filePath.add({path : path}, function (filePaths) {
-                if (filePaths.length === 1) {
+            filePath.add({path : path}, function (resp) {
+                if (resp.files.length === 1) {
                     $rootScope.$broadcast('file:first');
                 }
                 $rootScope.$broadcast('file:new');
-                defer.resolve(filePaths);
+                defer.resolve(resp.files);
             },function (resp) {
                 defer.reject(resp.data);
             });
@@ -113,22 +111,33 @@
             return defer.promise;
         };
 
-
         this.remove = function(id) {
-            return filePath.remove({ id:id }, function () {
+            var defer = $q.defer();
+            filePath.remove({ id:id }, function (resp) {
+                if (!resp.files.length) {
+                    $rootScope.$broadcast('file:nofiles');
+                }
+
                 $rootScope.$broadcast('file:remove');
-            }).$promise;
+                defer.resolve(resp.files);
+            });
+            return defer.promise;
         };
 
         this.query = function() {
-            return filePath.query().$promise;
+            var defer = $q.defer();
+            filePath.query(function (resp) {
+                defer.resolve(resp.files);
+            });
+            return defer.promise;
         };
     }]);
 
 
-    app.service('UserService', function($q, $resource){
+    app.service('UserService', ['$q', '$resource', function($q, $resource){
         var users = $resource('/users/:username', {username: '@username'}, {
-            update: { method:'PUT' }
+            update: { method:'PUT' },
+            query: { method:'GET', isArray:false }
         });
 
         this.update = function(user){
@@ -146,31 +155,30 @@
         this.query = function() {
             var defer = $q.defer();
 
-            users.query(function(users){
-                defer.resolve(users);
+            users.query(function(resp){
+                defer.resolve(resp.users);
             }, function(resp){
-                defer.reject(resp.data[0]);
+                defer.reject(resp.data);
             });
 
             return defer.promise;
         };
-    });
+    }]);
 
 
-
-    app.controller('MainCtrl', ['$scope', 'UserService', function($scope, UserService) {
-        $scope.$emit('nlcloak:add', 'mainctrl');
-
+    app.controller('MainCtrl', ['$scope', 'UserService', function($scope, userService) {
         var self = this;
 
+        $scope.$emit('loading', 'mainctrl');
+
         var getUsers = function () {
-            UserService.query().then(function (users) {
+            userService.query().then(function (users) {
                 $scope.selectedUser = _.findWhere(users, { selected: true }) || { name : 'No user selected' };
                 $scope.users = users;
-                $scope.$emit('nlcloak:remove', 'mainctrl');
+                $scope.$emit('loaded', 'mainctrl');
             }, function (message) {
                 $scope.users = [];
-                $scope.message = {type : 'error', message : message};
+                $scope.message = message;
             });
         };
 
@@ -184,10 +192,10 @@
 
         // we only need to call getUsers when the first file is added as it will be used to update the users.
         $scope.$on('file:first', getUsers);
-        $scope.$on('file:remove', getUsers);
+        $scope.$on('file:nofiles', getUsers);
 
         self.updateUser = function(user) {
-            UserService.update(user).then(function (message) {
+            userService.update(user).then(function (message) {
                 $scope.message = message;
             });
         };
