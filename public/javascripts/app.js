@@ -14,11 +14,20 @@
                 });
 
                 $rootScope.$on('loaded', function (evt, name) {
-                    registerArr = _.without(registerArr, name);
+                    if (registerArr.length) {
+                        registerArr = _.without(registerArr, name);
 
-                    if (!registerArr.length) {
-                        $element.removeAttr('nl-cloak');
+                        setTimeout(function () {
+                            $element.hide().removeAttr('nl-cloak').fadeIn(200);
+                            $rootScope.hideSpinner = true;
+                            $rootScope.$apply();
+                        }, 200);
                     }
+
+
+
+
+
                 });
             }
         };

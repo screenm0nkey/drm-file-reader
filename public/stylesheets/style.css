@@ -15,6 +15,10 @@ form {
     position: relative;
 }
 
+hr {
+    border : 1px solid #dedede;
+}
+
 input {
     width: 100%;
     display:block;
@@ -26,20 +30,6 @@ input {
     border-radius: 4px;
     color: #666;
     font-size: 13px;
-}
-
-.left{
-    float : left;
-    width : 10%;
-}
-
-.right {
-    float: left;
-    width: 90%;
-}
-
-.right p {
-    background-color: pink;
 }
 
 
@@ -58,6 +48,46 @@ hr {
     margin: 20px 0;
 }
 
+ul.path-list {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+    margin-top:10px;
+    font-family: courier;
+    font-size: 12px;
+    color : #000;
+
+}
+
+ul.path-list li {
+    padding: 3px;
+    background-color: goldenrod;
+    margin-bottom: 3px;
+    border-radius: 4px;
+}
+
+ul.path-list li button {
+    display: block;
+    float: left;
+    width :10%;
+}
+
+
+ul.path-list li span {
+    display: block;
+    float: right;
+    text-align: left;
+    width: 85%;
+    position: relative;
+    top: 4px;
+}
+
+.spinner {
+    position: absolute;
+    left:50%;
+    right:50%;
+    top : 100px;
+}
 .message {
     color: #fff;
     background-color: lightgreen;
@@ -87,38 +117,18 @@ hr {
     color: #999;
 }
 
-ul.path-list {
-    list-style-type: none;
-    padding: 0px;
-    margin: 0px;
-    margin-top:10px;
-    font-family: courier;
-    font-size: 12px;
-    color : #000;
-
+.left{
+    float : left;
+    width : 10%;
 }
 
-ul.path-list li {
-  padding: 3px;
-  background-color: goldenrod;
-  margin-bottom: 3px;
-  border-radius: 4px;
+.right {
+    float: left;
+    width: 90%;
 }
 
-ul.path-list li button {
-  display: block;
-  float: left;
-  width :10%;
-}
-
-
-ul.path-list li span {
-    display: block;
-    float: right;
-    text-align: left;
-    width: 85%;
-    position: relative;
-    top: 4px;
+.right p {
+    background-color: pink;
 }
 
 .cf:before,

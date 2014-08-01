@@ -3,31 +3,37 @@
 <head lang="en">
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/public/stylesheets/style.css"/>
-    <title>User Selector</title>
+    <title>DRM User Selector</title>
 </head>
-<body nl-cloak ng-app="app" ng-controller="MainCtrl as Main">
+<body ng-app="app" ng-controller="MainCtrl as Main">
 
-<span class="no-users" ng-if="!users.length">Please add paths to your users_local.yml file</span>
+<img class="spinner" ng-hide="hideSpinner" src="/public/images/spinner.gif" alt=""/>
 
-<span ng-if="users.length">
-    <h3>Currently Selected user : {{ selectedUser.name }}</h3>
-    <h5>{{ selectedUser.group | removeGroup }}</h5>
+<div class="container" nl-cloak>
+    <span class="no-users" ng-if="!users.length">Please add paths to your users_local.yml file</span>
 
-    <form name="select-user">
-        <select
-                ng-model="selectedUser"
-                ng-options="u.name group by u.group for u in users"
-                ng-change="Main.updateUser(selectedUser)">
-            <option value="">-- Select User --</option>
-        </select>
-    </form>
-</span>
+    <span ng-if="users.length">
+        <h3>Currently Selected user : {{ selectedUser.name }}</h3>
+        <h5>{{ selectedUser.group | removeGroup }}</h5>
 
-<hr/>
+        <form name="select-user">
+            <select
+                    ng-model="selectedUser"
+                    ng-options="u.name group by u.group for u in users"
+                    ng-change="Main.updateUser(selectedUser)">
+                <option value="">-- Select User --</option>
+            </select>
+        </form>
+    </span>
 
-<nl-message></nl-message>
+    <hr/>
 
-<nl-add-file-path></nl-add-file-path>
+    <nl-message></nl-message>
+
+    <nl-add-file-path></nl-add-file-path>
+</div>
+
+
 
 
 
@@ -48,12 +54,12 @@
                 <div class="left"><button ng-click='add($event)'>Add path</button></div>
                 <input class="right" type="text"/>
             </div>
-
         </span>
-
+        <hr/>
         <ul class="path-list">
             <li ng-repeat="item in paths" class="cf"><button ng-click="remove(item)">Remove</button><span>{{ item.path }}</span></li>
         </ul>
+
     </form>
 </script>
 </body>
