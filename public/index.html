@@ -10,19 +10,31 @@
 <img class="spinner" ng-hide="hideSpinner" src="/public/images/spinner.gif" alt=""/>
 
 <div class="container" nl-cloak>
-    <span class="no-users" ng-if="!users.length">Please add paths to your users_local.yml file</span>
+    <span class="no-users" ng-if="!users.length">Please add at least one path to a <strong>users_local.yml</strong> file</span>
 
     <span ng-if="users.length">
-        <h3>Currently Selected user : {{ selectedUser.name }}</h3>
-        <h5>{{ selectedUser.group | removeGroup }}</h5>
+        <h3>Currently Selected user : <strong>{{ selectedUser.name }} - {{ selectedUser.group | removeGroup }}</strong></h3>
 
-        <form name="select-user">
-            <select
-                    ng-model="selectedUser"
-                    ng-options="u.name group by u.group for u in users"
-                    ng-change="Main.updateUser(selectedUser)">
-                <option value="">-- Select User --</option>
-            </select>
+
+        <form name="select-user" class="cf">
+            <div class="list-item">
+                <p>List by Group</p>
+                <select
+                        ng-model="selectedUser"
+                        ng-options="u.name group by u.group for u in users"
+                        ng-change="Main.updateUser(selectedUser)">
+                    <option value="">-- Select User --</option>
+                </select>
+            </div>
+            <div class="list-item">
+                <p>List by Role</p>
+                <select
+                        ng-model="selectedUser"
+                        ng-options="u.name group by u.type for u in users"
+                        ng-change="Main.updateUser(selectedUser)">
+                    <option value="">-- Select User --</option>
+                </select>
+            </div>
         </form>
     </span>
 
@@ -47,10 +59,8 @@
 <script type="text/ng-template" id="filepath.html">
     <form name="add-files">
         <span class="path">
-            <p><strong>Add paths of all local_user.yaml files i.e.</strong> <br>
-                <span class="path-example">/home/nick/Sites/drm_services/local_user.yml</span><br/>
-                <span class="path-example">/home/nick/Sites/drm-session/local_user.yml</span>
-            </p>
+            <p>Example path: <br>
+            <span class="path-example">/Users/someuser/apps/drm_services/users_local.yml</span>
 
             <div class="cf">
                 <div class="left"><button ng-click='add($event)'>Add path</button></div>

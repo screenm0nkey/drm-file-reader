@@ -1,9 +1,21 @@
 (function(angular){
     "use strict";
 
+    var req = 'Requester';
+    var app = 'Approver';
+
+    var userTypes = {
+        DRM_Legal : req,
+        DRM_TALM : app,
+        DRM_Global_Treasury : app,
+        DRM_MCOF : app,
+        DRM_Collaborator : req,
+        DRM_Sales : req
+    }
+
     var app = angular.module('app', ['ngResource']);
 
-    app.directive('nlCloak', ['$rootScope', function ($rootScope) {
+    app.directive('nlCloak', ['$rootScope', '$window', function ($rootScope, $window) {
         return {
             restrict : 'A',
             controller : function ($element) {
@@ -17,17 +29,13 @@
                     if (registerArr.length) {
                         registerArr = _.without(registerArr, name);
 
-                        setTimeout(function () {
+                        // create a fake delay as everyone loves a spinner:)
+                        $window.setTimeout(function () {
                             $element.hide().removeAttr('nl-cloak').fadeIn(200);
                             $rootScope.hideSpinner = true;
                             $rootScope.$apply();
                         }, 200);
                     }
-
-
-
-
-
                 });
             }
         };
@@ -165,6 +173,11 @@
             var defer = $q.defer();
 
             users.query(function(resp){
+                // add type i.e. requester, approver
+                _.each(resp.users, function(user){
+                    user.type = userTypes[user.group] || 'All Roles';
+
+                });
                 defer.resolve(resp.users);
             }, function(resp){
                 defer.reject(resp.data);
