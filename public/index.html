@@ -10,7 +10,7 @@
 <img class="spinner" ng-hide="hideSpinner" src="/public/images/spinner.gif" alt=""/>
 
 <div class="container" nl-cloak>
-    <span class="no-users" ng-if="!users.length">Please add at least one path to a <strong>users_local.yml</strong> file</span>
+    <span class="no-users" ng-if="!users.length">Please add at least one path to a <strong>local_user.yml</strong> file</span>
 
     <span ng-if="users.length">
         <h3>Currently Selected user : <strong>{{ selectedUser.name }} - {{ selectedUser.group | removeGroup }}</strong></h3>
@@ -60,7 +60,7 @@
     <form name="add-files">
         <span class="path">
             <p>Example path: <br>
-            <span class="path-example">/Users/someuser/apps/drm_services/users_local.yml</span>
+            <span class="path-example">/Users/someuser/apps/drm_services/local_user.yml</span>
 
             <div class="cf">
                 <div class="left"><button ng-click='add($event)'>Add path</button></div>
